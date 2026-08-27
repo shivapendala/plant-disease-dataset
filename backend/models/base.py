@@ -1,0 +1,10 @@
+"""Base declarative class and common audit columns."""
+from datetime import datetime, timezone
+from sqlalchemy import Column, Integer, DateTime, Boolean
+from backend.core.database import Base
+
+class TimestampMixin:
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+    is_active = Column(Boolean, default=True, nullable=False)
