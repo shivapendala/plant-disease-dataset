@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: floraguard-backend
+  labels:
+    app: floraguard-backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: floraguard-backend
+  template:
+    metadata:
+      labels:
+        app: floraguard-backend
+    spec:
+      containers:
+      - name: backend
+        image: floraguard/backend:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: floraguard-secrets
+              key: database-url
+        resources:
+          limits:
+            cpu: "2"
+            memory: "4Gi"
+          requests:
+            cpu: "500m"
+            memory: "1Gi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: floraguard-backend-svc
+spec:
+  selector:
+    app: floraguard-backend
+  ports:
+  - port: 8000
+    targetPort: 8000
+  type: ClusterIP
